@@ -15,6 +15,7 @@ class ColorFilterNode:
 
         self.mask_pub = rospy.Publisher('/filtered/mask', Image, queue_size=1)
 
+	# Подписка на топик с изрображением /usb_cam/image_raw
         rospy.Subscriber("/usb_cam/image_raw", Image, self.callback, queue_size=1)
         rospy.loginfo(f"Фильтрация по цвету: {self.color_name}")
 
@@ -45,6 +46,7 @@ class ColorFilterNode:
             cv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
             hsv = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
 
+	    # Применение цветового фильтра
             masks = [cv2.inRange(hsv, l, u) for l, u in self.get_color_bounds(self.color_name)]
             mask = reduce(cv2.bitwise_or, masks)
 
